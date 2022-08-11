@@ -61,4 +61,43 @@ const removeCategory = async (req, res) => {
     }
 } 
 
-export {getCategoryList, addCategory, removeCategory}
+const changeCategory = async (req, res) => {
+    const {user} = req
+    const { categoryName, newColor, newName } = req.body
+    const foundUser = await User.findOne({userID: user._id})
+    
+    if (!foundUser){
+        res.status(400).json({ msg: "Usuario no encontrado" , error: true})
+    }
+
+    const newCategoryNameIndex = foundUser.categories.findIndex(category => category.name === newName);
+    
+    if (newCategoryNameIndex !== -1){ 
+        return res.status(400).json({msg:"Nombre ya esta en uso", error:true})
+    }
+
+    const categoryExists = foundUser.categories.findIndex(category => category.name === categoryName); //Aca nos aseguramos que la categoria exista, y extraemos su index
+    
+    if(categoryExists !== -1){
+        if((!newName || categoryName === newName) && (!newColor || newColor === foundUser.categories[categoryExists].color)){
+            return res.status(400).json({msg:"No hay cambios a realizar", error:true})
+        } else {
+            if(newName && categoryName !== newName){
+                foundUser.categories[categoryExists].name = newName
+            }
+            if(newColor && foundUser.categories[categoryExists].color !== newColor){
+                foundUser.categories[categoryExists].color = newColor
+            }
+            try { 
+                await foundUser.save(); //Guardamos el listado
+                res.status(201).json({msg: "Categoria eliminada exitosamente"}); //Le puse un 201 en vez de un 204 para poder mandar un json de respuesta, personalmente prefiero ver que reciba algo
+            } catch (error) {
+                return res.status(409).json({msg: `Ocurrió un error: ${error}` , error: true});
+            }
+        }
+    } else {
+        return res.status(400).json({msg:"La categoria no existe" , error: true});
+    }
+} 
+
+export {getCategoryList, addCategory, removeCategory, changeCategory}

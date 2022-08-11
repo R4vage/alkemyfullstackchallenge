@@ -18,7 +18,7 @@ const expenseSchema = mongoose.Schema({ //Probablemente habria sido mejor usar S
         required: true
     }, 
 
-    categoryName: {
+    categoryID: {
         type: String,
         ref: "User.categories"
     },

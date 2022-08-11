@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema(
         unique: true
       },
       categories: [
-        {//Agregamos categories, ya que de acuerdo al challenge es un plus poder definir categorizar los gastos
+        {//Agregué categories, ya que de acuerdo al challenge es un plus poder categorizar los gastos
             name: {
                 type: String,
                 required: true, 
